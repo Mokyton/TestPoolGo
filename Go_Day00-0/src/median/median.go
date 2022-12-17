@@ -12,6 +12,6 @@ func Median(sequence []int) float64 {
 		res := mean.Mean([]int{sequence[(n / 2)], sequence[(n/2)-1]})
 		return res
 	}
-	res := sequence[(n/2)+1]
+	res := sequence[(n / 2)]
 	return float64(res)
 }

@@ -52,7 +52,7 @@ func main() {
 	default:
 		fmt.Printf("Mean: %.2f\n", res.mean)
 		fmt.Printf("Median: %.2f\n", res.median)
-		fmt.Printf("MOde: %d\n", res.mode)
+		fmt.Printf("Mode: %d\n", res.mode)
 		fmt.Printf("SD: %.2f\n", res.sd)
 	}
 }

@@ -1,0 +1,47 @@
+<recipes>
+    <cake>
+        <name>Red Velvet Strawberry Cake</name>
+        <stovetime>40 min</stovetime>
+        <ingredients>
+            <item>
+                <itemname>Flour</itemname>
+                <itemcount>3</itemcount>
+                <itemunit>cups</itemunit>
+            </item>
+            <item>
+                <itemname>Vanilla extract</itemname>
+                <itemcount>1.5</itemcount>
+                <itemunit>tablespoons</itemunit>
+            </item>
+            <item>
+                <itemname>Strawberries</itemname>
+                <itemcount>7</itemcount>
+                <itemunit></itemunit> <!-- itemunit may be empty  -->
+            </item>
+            <!-- Here can be more ingredients  -->
+        </ingredients>
+    </cake>
+    <cake>
+        <name>Blueberry Muffin Cake</name>
+        <stovetime>30 min</stovetime>
+        <ingredients>
+            <item>
+                <itemname>Baking powder</itemname>
+                <itemcount>3</itemcount>
+                <itemunit>teaspoons</itemunit>
+            </item>
+            <item>
+                <itemname>Brown sugar</itemname>
+                <itemcount>0.5</itemcount>
+                <itemunit>cup</itemunit>
+            </item>
+            <item>
+                <itemname>Blueberries</itemname>
+                <itemcount>1</itemcount>
+                <itemunit>cup</itemunit>
+            </item>
+            <!-- Here can be more ingredients  -->
+        </ingredients>
+    </cake>
+    <!-- Here can be more cakes  -->
+</recipes>

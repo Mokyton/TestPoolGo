@@ -1,0 +1,40 @@
+{
+  "cake": [
+    {
+      "name": "Red Velvet Strawberry Cake",
+      "time": "45 min",
+      "ingredients": [
+        {
+          "ingredient_name": "Flour",
+          "ingredient_count": "2",
+          "ingredient_unit": "mugs"
+        },
+        {
+          "ingredient_name": "Strawberries",
+          "ingredient_count": "7"
+        },
+        {
+          "ingredient_name": "Vanilla extract",
+          "ingredient_count": "2.5",
+          "ingredient_unit": "tablespoons"
+        }
+      ]
+    },
+    {
+      "name": "Blueberry Muffin Cake",
+      "time": "30 min",
+      "ingredients": [
+        {
+          "ingredient_name": "Brown sugar",
+          "ingredient_count": "1",
+          "ingredient_unit": "mug"
+        },
+        {
+          "ingredient_name": "Blueberries",
+          "ingredient_count": "1",
+          "ingredient_unit": "mug"
+        }
+      ]
+    }
+  ]
+}

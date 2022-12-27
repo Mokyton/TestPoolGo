@@ -1,4 +1,5 @@
-/Users/baker/recipes/database_version3.yaml
-/Users/baker/recipes/database.xml
-/Users/baker/pokemon.avi
+/etc/stove/config.xml
 /var/log/orders.log
+/Users/baker/pokemon.avi
+/Users/baker/recipes/database.json
+/Users/baker/recipes/database_version3.

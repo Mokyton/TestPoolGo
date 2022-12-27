@@ -1,42 +1,95 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
+	"sort"
 )
 
 func main() {
 	oldFile := flag.String("old", "txtFiles/snapshot1.txt", "path to old database")
 	newFile := flag.String("new", "txtFiles/snapshot2.txt", "path to new database")
 	flag.Parse()
-	o1, err := exec.Command("sort", *oldFile).CombinedOutput()
-	o2, err := exec.Command("sort", *newFile).CombinedOutput()
-	f, _ := os.Create("tmp1")
-	defer f.Close()
-	f.Write(o1)
-	d, _ := os.Create("tmp2")
-	defer d.Close()
-	d.Write(o2)
-	defer os.Remove(f.Name())
-	defer os.Remove(d.Name())
-	output, err := exec.Command("diff", f.Name(), d.Name()).CombinedOutput()
-	//cmd := exec.Command("diff", "snapshot1.txt", "snapshot2.txt")
-	//stdout, err := cmd.Output()
-	storage := strings.Split(string(output), "\n")
-	for i := 0; i < len(storage); i++ {
-		fmt.Println(storage[i])
-	}
+	newF, oldF, err := OpenFiles(*oldFile, *newFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//
-	//// Print the output
-	//fmt.Println(string(stdout))
+	err = CompareFiles(newF, oldF)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-//<(sort File1.txt)
+func OpenFiles(firstFile, secondFile string) (*os.File, *os.File, error) {
+	firFile, err := os.Open(firstFile)
+	if err != nil {
+		return nil, nil, err
+	}
+	secFile, err := os.Open(secondFile)
+	if err != nil {
+		return nil, nil, err
+	}
+	return firFile, secFile, nil
+}
+
+func ReadFile(file *os.File) ([]string, error) {
+	var res []string
+	scan := bufio.NewScanner(file)
+
+	for scan.Scan() {
+		res = append(res, scan.Text())
+	}
+	if err := scan.Err(); err != nil {
+		return nil, err
+	}
+	file.Seek(0, 0)
+	return res, nil
+}
+
+func CompareFiles(firstFile, secondFile *os.File) error {
+	defer firstFile.Close()
+	defer secondFile.Close()
+	var secondFileData []string
+	firstFileData, err := ReadFile(firstFile)
+	sort.Strings(firstFileData)
+	if err != nil {
+		return err
+	}
+	scanner := bufio.NewScanner(secondFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line != "" {
+			secondFileData = append(secondFileData, line)
+			if !stringContains(line, firstFileData) {
+				fmt.Printf("ADDED %s\n", line)
+			}
+		}
+
+	}
+	if err = scanner.Err(); err != nil {
+		return err
+	}
+	sort.Strings(secondFileData)
+	for i := 0; i < len(firstFileData); i++ {
+		if firstFileData[i] != " " {
+			if !stringContains(firstFileData[i], secondFileData) {
+				fmt.Printf("REMOVED %s\n", firstFileData[i])
+			}
+		}
+	}
+
+	return nil
+}
+
+func stringContains(elem string, data []string) bool {
+
+	i := sort.SearchStrings(data, elem)
+	if i < len(data) && data[i] == elem {
+		return true
+	}
+
+	return false
+}

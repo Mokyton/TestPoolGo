@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
@@ -22,33 +23,22 @@ type Doc struct {
 	Location elastic.GeoPoint `json:"location"`
 }
 
-//var (
-//	indexName string
-//	//numWorkers int
-//	//flushBytes int
-//	//numItems   int
-//)
-
 func main() {
-	dataSet, err := getDataSet("../../materials/data.csv")
+	pathToDataSets := flag.String("ds", "../../materials/data.csv", "path to csv file")
+	indexName := flag.String("IN", "places", "index name")
+	countOfData := flag.Int("cData", 25, "count of data u want to upload")
+	flag.Parse()
+	dataSet, err := getDataSet(*pathToDataSets)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	fmt.Println(len(dataSet))
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
-	//	Index:  indexName,
-	//	Client: es,
-	//	//NumWorkers: numWorkers,
-	//	//FlushBytes: int(flushBytes),
-	//	//FlushInterval: 30 * time.Second,
-	//})
-
-	for i := 0; i < 25; i++ {
+	for i := 0; i < *countOfData; i++ {
 		place := setData(dataSet[i])
 		myJson, err := jsonHandler(place)
 		if err != nil {
@@ -56,7 +46,7 @@ func main() {
 		}
 
 		request := esapi.IndexRequest{
-			Index:      "places",
+			Index:      *indexName,
 			DocumentID: strconv.Itoa(i + 1),
 			Body:       strings.NewReader(string(myJson)),
 			Refresh:    "true",
@@ -65,7 +55,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer response.Body.Close()
 
 		if response.IsError() {
 			log.Fatalln("Error indexing document")
@@ -77,12 +66,8 @@ func main() {
 		}
 
 		fmt.Println("status:", response.Status())
+		response.Body.Close()
 	}
-	//
-	//if err = bi.Close(context.Background()); err != nil {
-	//	log.Fatalf("Unexpected error: %s", err)
-	//}
-
 }
 
 func getDataSet(fileCSV string) ([][]string, error) {

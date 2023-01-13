@@ -24,15 +24,15 @@ type Doc struct {
 }
 
 func main() {
-	pathToDataSets := flag.String("ds", "../../materials/data.csv", "path to csv file")
-	indexName := flag.String("IN", "places", "index name")
+	pathToDataSets := flag.String("dSet", "../../materials/data.csv", "path to csv file")
+	indexName := flag.String("iName", "places", "index name")
 	countOfData := flag.Int("cData", 25, "count of data u want to upload")
 	flag.Parse()
 	dataSet, err := getDataSet(*pathToDataSets)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(len(dataSet))
+
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatal(err)
@@ -58,11 +58,6 @@ func main() {
 
 		if response.IsError() {
 			log.Fatalln("Error indexing document")
-		}
-
-		var res map[string]interface{}
-		if err := json.NewDecoder(response.Body).Decode(&res); err != nil {
-			log.Fatalf("error parsing the response body: %s", err)
 		}
 
 		fmt.Println("status:", response.Status())

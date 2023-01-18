@@ -17,7 +17,7 @@ import (
 
 type Doc struct {
 	ID       int              `json:"id"`
-	Name     string           `json:"name""`
+	Name     string           `json:"name"`
 	Address  string           `json:"address"`
 	Phone    string           `json:"phone"`
 	Location elastic.GeoPoint `json:"location"`
@@ -26,9 +26,13 @@ type Doc struct {
 func main() {
 	pathToDataSets := flag.String("dSet", "../../materials/data.csv", "path to csv file")
 	indexName := flag.String("iName", "places", "index name")
-	countOfData := flag.Int("cData", 25, "count of data u want to upload")
+	countOfData := flag.Int("cData", 0, "count of data u want to upload")
+
 	flag.Parse()
 	dataSet, err := getDataSet(*pathToDataSets)
+	if *countOfData == 0 {
+		*countOfData = len(dataSet)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,6 +43,7 @@ func main() {
 	}
 
 	for i := 0; i < *countOfData; i++ {
+
 		place := setData(dataSet[i])
 		myJson, err := jsonHandler(place)
 		if err != nil {
@@ -46,10 +51,11 @@ func main() {
 		}
 
 		request := esapi.IndexRequest{
-			Index:      *indexName,
-			DocumentID: strconv.Itoa(i + 1),
-			Body:       strings.NewReader(string(myJson)),
-			Refresh:    "true",
+			Index:        *indexName,
+			DocumentID:   strconv.Itoa(i + 1),
+			DocumentType: "place",
+			Body:         strings.NewReader(string(myJson)),
+			Refresh:      "true",
 		}
 		response, err := request.Do(context.Background(), es)
 		if err != nil {
@@ -63,6 +69,7 @@ func main() {
 		fmt.Println("status:", response.Status())
 		response.Body.Close()
 	}
+
 }
 
 func getDataSet(fileCSV string) ([][]string, error) {
@@ -71,8 +78,9 @@ func getDataSet(fileCSV string) ([][]string, error) {
 		return nil, err
 	}
 	defer file.Close()
-
+	var d []byte
 	reader := tsv.NewReader(file)
+	reader.Read(d)
 	data, err := reader.ReadAll()
 	if err != nil {
 		return nil, err

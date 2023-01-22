@@ -90,7 +90,3 @@ func NewData(places []db.Place, total int, page int) Data {
 	d.Rng = rng
 	return d
 }
-
-//func writeInvalidParamError(w http.ResponseWriter, err error) {
-//	w.Header().
-//}

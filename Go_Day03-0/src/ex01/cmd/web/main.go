@@ -32,10 +32,10 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	param := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(param)
 	if err != nil {
-		w.Write([]byte("Invalid page request"))
+		w.Write([]byte(fmt.Sprintf("Invalid 'page' value: '%s'", param)))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -61,7 +61,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	data := NewData(places, total, page)
 	err = tmpl.Execute(w, data)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.Write([]byte("Wrong template "))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

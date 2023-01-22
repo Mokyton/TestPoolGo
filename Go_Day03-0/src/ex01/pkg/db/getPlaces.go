@@ -40,9 +40,7 @@ func (p *Types) GetPlaces(limit int, offset int) ([]Place, int, error) {
 		Index:        []string{"places"},
 		DocumentType: []string{"place"},
 		Size:         &limit,
-		//From:         &offset,
-		Scroll: 1 * time.Minute,
-		Sort:   []string{"_doc"},
+		Scroll:       1 * time.Minute,
 	}
 
 	res, err := req.Do(context.Background(), es)

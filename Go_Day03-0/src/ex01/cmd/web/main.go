@@ -2,6 +2,7 @@ package main
 
 import (
 	"ex01/pkg/db"
+	"flag"
 	"fmt"
 	"html/template"
 	"math"
@@ -19,25 +20,24 @@ type Data struct {
 }
 
 func main() {
-
+	addr := flag.String("addr", ":9090", "Сетевой адрес HTTP")
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	mux.HandleFunc("/", handler)
 
-	fmt.Println("Server start")
-	http.ListenAndServe(":9090", mux)
-	//da := pkg.Store().GetPlaces(10, 20)
-	//fmt.Println(d)
-	//fmt.Println(test)
+	fmt.Printf("Запуск сервера на %s", *addr)
+	http.ListenAndServe(*addr, mux)
+
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
-		//fmt.Println(r.URL.Query().)
-		//fmt.Println(err)
+		w.Write([]byte("Invalid page request"))
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	files := []string{
@@ -46,16 +46,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl, err := template.ParseFiles(files...)
 	if err != nil {
-
+		w.Write([]byte("Can't parse html"))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
 	places, total, err := db.New().GetPlaces(10, page)
 	if err != nil {
-		fmt.Println(err)
+		w.Write([]byte("Page didn't found"))
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
+
 	data := NewData(places, total, page)
-
 	err = tmpl.Execute(w, data)
-
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(200)
 }
 
 func NewData(places []db.Place, total int, page int) Data {
@@ -69,10 +79,18 @@ func NewData(places []db.Place, total int, page int) Data {
 	if d.NextPage > d.LastPage {
 		d.NextPage = d.LastPage
 	}
-	rng := make([]int, 10, 10)
-	for i := 0; i < 10; i++ {
+	v := d.LastPage - page
+	if v > 10 {
+		v = 10
+	}
+	rng := make([]int, v, v)
+	for i := 0; i < v; i++ {
 		rng[i] = page + i + 1
 	}
 	d.Rng = rng
 	return d
 }
+
+//func writeInvalidParamError(w http.ResponseWriter, err error) {
+//	w.Header().
+//}

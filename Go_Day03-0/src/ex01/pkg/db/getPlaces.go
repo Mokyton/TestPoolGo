@@ -20,11 +20,6 @@ type Types struct {
 	Places   []Place `json:"_source"`
 }
 
-//
-//func New() *pkg.Store {
-//	return &Types{}
-//}
-
 func New() *Types {
 	places := make([]Place, 0, 10)
 	return &Types{Places: places}

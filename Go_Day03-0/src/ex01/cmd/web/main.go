@@ -20,7 +20,7 @@ type Data struct {
 }
 
 func main() {
-	addr := flag.String("addr", ":9090", "Сетевой адрес HTTP")
+	addr := flag.String("addr", ":8888", "Сетевой адрес HTTP")
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))

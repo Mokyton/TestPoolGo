@@ -1,0 +1,28 @@
+{{template "base" .}}
+
+        {{define "title"}}S21{{end}}
+
+        {{define "main"}}
+<h5>Total: {{.Total}}</h5>
+<ul>{{range .Places}}
+<li>
+    <div>{{.Name}}</div>
+    <div>{{.Address}}</div>
+    <div>{{.Phone}}</div>
+</li>{{end}}
+</ul>
+<td>
+<a href="/?page={{.PrevPage}}"><--</a>
+</td>
+<td>
+<a href="/?page=1">First Page</a>
+</td>
+<td>{{range .Rng}}
+    <a href="/?page={{.}}">{{.}}</a>
+</td>{{end}}
+<td>
+    <a href="/?page={{.LastPage}}">Last Page</a>
+</td>
+<a href="/?page={{.NextPage}}">--></a>
+
+        {{end}}

@@ -2,10 +2,13 @@ package db
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/olivere/elastic"
+	"strconv"
 )
 
 type SortJson struct {
@@ -27,6 +30,11 @@ type Sort struct {
 	GeoDistance GeoDistance `json:"_geo_distance"`
 }
 
+type Geo struct {
+	Lat float64
+	Lon float64
+}
+
 type Place struct {
 	ID       int              `json:"id"`
 	Name     string           `json:"name"`
@@ -43,68 +51,58 @@ func New() *Types {
 	return &Types{}
 }
 
-func (p *Types) GetPlaces(limit int, lat float64, lon float64) ([]Place, error) {
+func (p *Types) GetPlaces(limit int, lat string, lon string) ([]Place, error) {
 	var buf bytes.Buffer
+	if lat == "" || lon == "" {
+		return nil, errors.New("Empty lat and lon")
+	}
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		return nil, err
 	}
 
-	//sort := SortJson{Sort: []Sort{{
-	//	GeoDistance{
-	//		Location:       Location{Lon: lon, Lat: lat},
-	//		Order:          "asc",
-	//		Unit:           "km",
-	//		Mode:           "min",
-	//		DistanceType:   "arc",
-	//		IgnoreUnmapped: true,
-	//	},
-	//}}}
-
-	sort := map[string]interface{}{
-		"sort": map[string]interface{}{
-			"_geo_distance": map[string]interface{}{
-				"location": map[string]interface{}{
-					"lat": lat,
-					"lon": lon,
-				},
-				"order":           "asc",
-				"unit":            "km",
-				"mode":            "min",
-				"distance_type":   "arc",
-				"ignore_unmapped": true,
-			},
-		},
+	latFloat, err := strconv.ParseFloat(lat, 64)
+	if err != nil {
+		return nil, err
 	}
+
+	lonFloat, err := strconv.ParseFloat(lon, 64)
+	if err != nil {
+		return nil, err
+	}
+	sort := SortJson{Sort: []Sort{{
+		GeoDistance{
+			Location:       elastic.GeoPoint(Location{Lon: lonFloat, Lat: latFloat}),
+			Order:          "asc",
+			Unit:           "km",
+			Mode:           "min",
+			DistanceType:   "arc",
+			IgnoreUnmapped: true,
+		},
+	}}}
 
 	if err = json.NewEncoder(&buf).Encode(sort); err != nil {
 		return nil, err
 	}
 
-	//req := esapi.SearchRequest{
-	//	Index:        []string{"places"},
-	//	DocumentType: []string{"place"},
-	//	Size:         &limit,
-	//	Body:         &buf,
-	//}
-	//
-	//res, err := req.Do(context.Background(), es)
-	//if err != nil {
-	//	return nil, err
-	//}
+	req := esapi.SearchRequest{
+		Index:        []string{"places"},
+		DocumentType: []string{"place"},
+		Size:         &limit,
+		Body:         &buf,
+	}
 
-	res, _ := es.Search(
-		es.Search.WithIndex("places"),
-		es.Search.WithSize(limit),
-		es.Search.WithBody(&buf),
-	)
+	res, err := req.Do(context.Background(), es)
+	defer res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	if err = json.NewDecoder(res.Body).Decode(p); err != nil {
 		return nil, err
 	}
-	res.Body.Close()
-	fmt.Println(p)
+
 	return p.Places, nil
 }
 

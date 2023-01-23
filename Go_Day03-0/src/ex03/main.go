@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 type Data struct {
@@ -28,42 +27,22 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	var prettyJSON bytes.Buffer
 
-	latStr := r.URL.Query().Get("lat")
-	lonStr := r.URL.Query().Get("lon")
-
-	lat, err := strconv.ParseFloat(latStr, 64)
-	if err != nil {
-		// cannot get lat
-		fmt.Println(err)
-	}
-
-	lon, err := strconv.ParseFloat(lonStr, 64)
-	if err != nil {
-		// cannot get lon
-		fmt.Println(err)
-	}
+	lat := r.URL.Query().Get("lat")
+	lon := r.URL.Query().Get("lon")
 
 	places, err := db.New().GetPlaces(3, lat, lon)
 	if err != nil {
 		// problem with elasticsearch
-		fmt.Println(err)
+		w.Write([]byte("<h1>Wrong lat and lon</h1>"))
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	data := NewData("recommendation", places)
-	rawJSON, err := json.Marshal(data)
-	err = json.Indent(&prettyJSON, rawJSON, "", "\t")
+	rawJSON, _ := json.Marshal(data)
+	_ = json.Indent(&prettyJSON, rawJSON, "", "\t")
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(prettyJSON.Bytes())
 	w.WriteHeader(http.StatusOK)
-}
-
-func path(path string) string {
-	for i := len(path) - 1; i > 0; i-- {
-		if string(path[i]) == "/" {
-			path = path[i+1:]
-			break
-		}
-	}
-	return path
 }
 
 func NewData(name string, places []db.Place) Data {

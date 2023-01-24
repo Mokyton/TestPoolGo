@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/olivere/elastic"
@@ -71,6 +72,9 @@ func (p *Types) GetPlaces(limit int, lat string, lon string) ([]Place, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(lonFloat, latFloat)
+
 	sort := SortJson{Sort: []Sort{{
 		GeoDistance{
 			Location:       elastic.GeoPoint(Location{Lon: lonFloat, Lat: latFloat}),
@@ -127,6 +131,7 @@ func (p *Types) UnmarshalJSON(data []byte) error {
 	}
 	for _, v := range tmpl.Hits.Hits {
 		p.Places = append(p.Places, v.Source)
+		fmt.Println(v.Source.Location.Lon, v.Source.Location.Lat)
 	}
 
 	return nil

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"flag"
@@ -22,6 +23,29 @@ type Doc struct {
 	Phone    string           `json:"phone"`
 	Location elastic.GeoPoint `json:"location"`
 }
+type Schema struct {
+	Properties Properties `json:"properties"`
+}
+
+type Properties struct {
+	Name     Name     `json:"name"`
+	Address  Address  `json:"address"`
+	Phone    Phone    `json:"phone"`
+	Location Location `json:"location"`
+}
+
+type Name struct {
+	D string `json:"type"`
+}
+type Address struct {
+	D string `json:"type"`
+}
+type Phone struct {
+	D string `json:"type"`
+}
+type Location struct {
+	D string `json:"type"`
+}
 
 func main() {
 	pathToDataSets := flag.String("dSet", "../../materials/data.csv", "path to csv file")
@@ -33,11 +57,38 @@ func main() {
 	if *countOfData == 0 {
 		*countOfData = len(dataSet)
 	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	es, err := elasticsearch.NewDefaultClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := es.Indices.Create("places")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+
+	var buf bytes.Buffer
+	b := Schema{Properties{
+		Name:     Name{"text"},
+		Address:  Address{"text"},
+		Phone:    Phone{"text"},
+		Location: Location{"geo_point"},
+	}}
+
+	err = json.NewEncoder(&buf).Encode(b)
+
+	res, err = es.Indices.PutMapping(
+		strings.NewReader(buf.String()),
+		es.Indices.PutMapping.WithIndex("places"),
+		es.Indices.PutMapping.WithDocumentType("place"),
+		es.Indices.PutMapping.WithIncludeTypeName(true),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,8 +108,10 @@ func main() {
 			Body:         strings.NewReader(string(myJson)),
 			Refresh:      "true",
 		}
+
 		response, err := request.Do(context.Background(), es)
 		if err != nil {
+
 			log.Fatal(err)
 		}
 
@@ -85,7 +138,7 @@ func getDataSet(fileCSV string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	data = data[1:][:]
+	data = data[:][:]
 	return data, nil
 }
 

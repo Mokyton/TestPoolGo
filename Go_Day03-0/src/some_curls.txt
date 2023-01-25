@@ -1,0 +1,35 @@
+curl -X GET "localhost:9200/places/_search?pretty&size=3" -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "bool": {
+       "must": {
+         "match_all": {}
+       }
+    }
+  },
+  "sort": [
+      {
+        "_geo_distance": {
+          "location": {
+            "lat": 55.76177775909036,
+            "lon": 37.61870900000001
+          },
+          "order": "desc",
+          "unit": "km",
+          "mode": "min",
+          "distance_type": "arc",
+          "ignore_unmapped": true
+        }
+      }
+  ]
+}
+'
+
+curl -XPUT “localhost:9200/places”
+
+curl -XPOST "localhost:8888/api/get_token" -H "Content-Type: application/json" -d'
+{
+    "username" : "Shamil",
+    "password" : "1999"
+}
+'

@@ -32,19 +32,27 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	places, err := db.New().GetPlaces(3, lat, lon)
 	if err != nil {
-		// problem with elasticsearch
-		w.Write([]byte("<h1>Wrong lat and lon</h1>"))
-		w.WriteHeader(http.StatusBadRequest)
+		errHandler(w, "Invalid parameters error", http.StatusBadRequest)
 		return
 	}
+
 	data := NewData("recommendation", places)
 	rawJSON, _ := json.Marshal(data)
 	_ = json.Indent(&prettyJSON, rawJSON, "", "\t")
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(prettyJSON.Bytes())
+	_, _ = w.Write(prettyJSON.Bytes())
 	w.WriteHeader(http.StatusOK)
 }
 
 func NewData(name string, places []db.Place) Data {
 	return Data{Name: name, Places: places}
+}
+
+func errHandler(w http.ResponseWriter, message string, errStatus int) {
+	jsn := struct {
+		Error string `json:"error"`
+	}{message}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(jsn)
+	w.WriteHeader(errStatus)
 }

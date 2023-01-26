@@ -10,6 +10,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"log"
+	"math"
 )
 
 var (
@@ -47,7 +48,6 @@ func main() {
 				swag.Int64Value(params.Order.CandyCount),
 				swag.Int64Value(params.Order.Money),
 			}
-			fmt.Println(candy)
 			_, ok := candyPrice[candy.name]
 			if !ok {
 				return operations.NewBuyCandyBadRequest().WithPayload(
@@ -91,8 +91,10 @@ func fillMap(priceList []good) {
 }
 
 func calculateChange(count, price, money int64) (int64, error) {
+	change := money - (price * count)
 	if money < price*count {
-		return 0, errors.New("Not enough money for goods")
+
+		return 0, errors.New(fmt.Sprintf("You need %d more money!", int(math.Abs(float64(change)))))
 	}
-	return money - (price * count), nil
+	return change, nil
 }

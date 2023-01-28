@@ -1,0 +1,57 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Candy Server
+paths:
+  /buy_candy:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: order
+          description: summary of the candy order
+          schema:
+            type: object
+            required:
+              - money
+              - candyType
+              - candyCount
+            properties:
+              money:
+                description: amount of money put into vending machine
+                type: integer
+              candyType:
+                description: kind of candy
+                type: string
+              candyCount:
+                description: number of candy
+                type: integer
+      operationId: buyCandy
+      responses:
+        201:
+          description: purchase succesful
+          schema:
+            type: object
+            properties:
+              thanks:
+                type: string
+              change:
+                type: integer
+        400:
+          description: some error in input data
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        402:
+          description: not enough money
+          schema:
+            type: object
+            properties:
+              error:
+                type: string

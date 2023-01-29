@@ -1,0 +1,23 @@
+curl -XPOST -H "Content-Type: application/json" -d '{"money": 20, "candyType": "CE", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": 0, "candyType": "AA", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": 20, "candyType": "NT", "candyCount": 3}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": 20, "candyType": "DE", "candyCount": -10}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": 20, "candyType": "YR", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": -20, "candyType": "GR", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
+
+curl -XPOST -H "Content-Type: application/json" -d '{"money": -20, "candyType": "NT", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
+
+
+
+
+
+		{name: "CE", price: 10},
+		{name: "AA", price: 15},
+		{name: "NT", price: 17},
+		{name: "DE", price: 21},
+		{name: "YR", price: 23},

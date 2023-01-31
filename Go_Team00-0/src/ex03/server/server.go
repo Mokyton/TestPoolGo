@@ -25,7 +25,7 @@ func (s *TransmitterApiServer) Connection(ctx context.Context, req *pb.Request) 
 	res.Frequency = rand.NormFloat64()*std + mean
 
 	res.UTC = timestamppb.Now()
-	_, err := fmt.Fprintln(os.Stdout, res.UTC.AsTime(), res.SessionId, res.Frequency, mean, std)
+	_, err := fmt.Fprintln(os.Stdout, res.UTC.AsTime().String(), res.SessionId, res.Frequency, mean, std)
 	if err != nil {
 		return nil, err
 	}

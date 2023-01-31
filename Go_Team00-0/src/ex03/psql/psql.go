@@ -3,7 +3,6 @@ package psql
 import (
 	"database/sql"
 	"fmt"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Model struct {
@@ -25,10 +24,10 @@ func NewDbConnection(host, port, user, password, dbname string) (*Model, error) 
 	return &Model{DB: db}, nil
 }
 
-func (m *Model) Insert(sessionId string, frequency float64, UTC *timestamppb.Timestamp) error {
-	stmt := `INSERT INTO logger (sessionid, frequency, utc)
+func (m *Model) Insert(sessionId string, valueAnomaly float64, UTC string) error {
+	stmt := `INSERT INTO anomaly (sessionid, valueAnomaly, utc)
 	VALUES ($1, $2, $3);`
-	_, err := m.DB.Exec(stmt, sessionId, frequency, UTC.AsTime().String())
+	_, err := m.DB.Exec(stmt, sessionId, valueAnomaly, UTC)
 	if err != nil {
 		return err
 	}
@@ -36,9 +35,9 @@ func (m *Model) Insert(sessionId string, frequency float64, UTC *timestamppb.Tim
 }
 
 func (m *Model) CreateTable() error {
-	stmt := `CREATE TABLE IF NOT EXISTS logger (
+	stmt := `CREATE TABLE IF NOT EXISTS anomaly (
     sessionId varchar(50) NOT NULL ,
-    frequency decimal not null,
+    valueAnomaly decimal not null,
     UTC varchar(50) );`
 	_, err := m.DB.Exec(stmt)
 	if err != nil {

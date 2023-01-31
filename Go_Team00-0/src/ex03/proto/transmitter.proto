@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package main;
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./proto";
+
+service TransmitterApi {
+ rpc Connection(Request) returns (Response) {}
+}
+
+message Request {
+}
+
+message Response {
+  string session_id = 1 ;
+  double frequency = 2 ;
+  google.protobuf.Timestamp UTC = 3 ;
+}

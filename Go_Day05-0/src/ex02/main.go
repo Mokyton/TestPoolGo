@@ -31,15 +31,14 @@ func getNCoolestPresents(src []myheap.Present, n int) ([]myheap.Present, error) 
 
 func main() {
 	src := []myheap.Present{
-		myheap.Present{5, 1},
-		myheap.Present{4, 5},
-		myheap.Present{3, 1},
-		myheap.Present{5, 2},
+		myheap.Present{Value: 5, Size: 1},
+		myheap.Present{Value: 4, Size: 5},
+		myheap.Present{Value: 3, Size: 1},
+		myheap.Present{Value: 5, Size: 2},
 	}
 	rm, err := getNCoolestPresents(src, 2)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	fmt.Println(rm)
 }

@@ -1,0 +1,23 @@
+{{define "login"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login page</title>
+    </head>
+    <body>
+    <form id="loginForm" name="loginForm" action="/login" method="post" class="mt-4">
+        <label for="login">Логин</label>
+        <input type="login" id="login" name="login" autocomplete="on">
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" autocomplete="on">
+        <button type="submit" name="submitBtn">Войти</button>
+    </form>
+    {{if . }}
+        <div>
+            {{.Message}}
+        </div>
+    {{end}}
+    </body>
+    </html>
+{{end}}

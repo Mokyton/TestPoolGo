@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel='shortcut icon' href='/static/img/image_logo.png' type='image/x-icon'>
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700'>
+</head>
+<body>
+<main>
+    <img src="/static/img/image_logo.png">
+    <h1>Hello {{.Name}} ! </h1>
+{{if .FullAccess }}
+    <div>
+        <form action="/createThought" method="post" class="thought">
+            <div class="thought">
+                <label for="Title"> Title </label>
+                <input type="text" name="Title" size="30" maxlength="50" required>
+            </div>
+            <div class="thought">
+                <label for="Content">Content: </label>
+                <input type="text" name="Content" required>
+            </div>
+            <div class="thought">
+                <input type="submit" value="Create!">
+            </div>
+        </form>
+    </div>
+{{end}}
+    <ul>{{range .Thoughts}}
+            <li>{{.}}</li>
+        {{end}}
+    </ul>
+    {{if .Previous}}<a href="/?page={{.Previous}}">previous</a>{{end}}
+    {{if .Next}}<a href="/?page={{.Next}}">next</a>{{end}}
+
+</main>
+
+</body>
+</html>

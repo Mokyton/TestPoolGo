@@ -1,0 +1,14 @@
+Showing nodes accounting for 13500ms, 88.41% of 15270ms total
+Dropped 63 nodes (cum <= 76.35ms)
+Showing top 10 nodes out of 52
+      flat  flat%   sum%        cum   cum%
+    3300ms 21.61% 21.61%     3310ms 21.68%  runtime.madvise
+    3140ms 20.56% 42.17%     3140ms 20.56%  runtime.memclrNoHeapPointers
+    1900ms 12.44% 54.62%     3320ms 21.74%  runtime.mallocgc
+    1310ms  8.58% 63.20%     9350ms 61.23%  ex01.minCoins (inline)
+    1010ms  6.61% 69.81%     8010ms 52.46%  runtime.growslice
+     820ms  5.37% 75.18%      820ms  5.37%  runtime.usleep
+     540ms  3.54% 78.72%     4430ms 29.01%  ex01.BenchmarkMinCoins.func1
+     540ms  3.54% 82.25%     6020ms 39.42%  ex01.BenchmarkMinCoins2.func1
+     510ms  3.34% 85.59%      510ms  3.34%  runtime.memmove
+     430ms  2.82% 88.41%      430ms  2.82%  runtime.nextFreeFast (inline)

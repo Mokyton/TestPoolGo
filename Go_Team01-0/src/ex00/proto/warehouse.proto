@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package main;
+
+option go_package = "./proto";
+
+service WareHouseApi {
+  rpc Ping(HeartBeatRequest) returns (HeartBeatResponse) {}
+}
+
+
+message HeartBeatRequest {
+  string socket = 1;
+}
+
+message HeartBeatResponse {
+  string currentInstance = 1;
+  repeated string KnowNodes = 2;
+}

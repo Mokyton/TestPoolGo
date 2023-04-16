@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package main;
+
+import "google/protobuf/any.proto";
+
+option go_package = "./proto";
+
+service WareHouseApi {
+  rpc Ping(HeartBeatRequest) returns (HeartBeatResponse) {}
+  rpc Set(SetRequest) returns (SetResponse) {}
+  rpc Get(GetRequest) returns (GetResponse) {}
+  rpc Update(UpdateRequest) returns(UpdateResponse) {}
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+
+message HeartBeatRequest {
+  string socket = 1;
+}
+
+message HeartBeatResponse {
+  string currentInstance = 1;
+  repeated string KnowNodes = 2;
+}
+
+message SetRequest {
+  string cluster = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+}
+
+message SetResponse {
+  bool success = 1;
+}
+
+message UpdateRequest {
+  string cluster = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+}
+
+message UpdateResponse {
+  bool success = 1;
+}
+
+message GetRequest {
+  string cluster = 1;
+  google.protobuf.Any key = 2;
+}
+
+message GetResponse {
+  google.protobuf.Any value = 1;
+}
+
+message DeleteRequest {
+  string cluster = 1;
+  google.protobuf.Any key = 2;
+}
+
+message DeleteResponse {
+  bool success = 1;
+}
